@@ -1,20 +1,20 @@
 package com.model;
 
-import java.util.List;
+import java.util.Set;
 
 public class Game {
     private Board board;
 
     public Game(String initialStateString) {
-        board = new Board(5, 5, this.getCoordinatesFromInput(initialStateString));
+        board = new Board(this.getCoordinatesFromInput(initialStateString));
     }
 
 
-    private List<Coordinate> getCoordinatesFromInput(String initialStateString){
+    private Set<Coordinate> getCoordinatesFromInput(String initialStateString) {
         return new InputToCoordinates(initialStateString).splitAndCreateCoordinates();
     }
 
-    public String getNextGeneration(){
+    public String getNextGeneration() {
         return board.getNextGeneration();
     }
 }

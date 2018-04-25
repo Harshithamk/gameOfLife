@@ -1,7 +1,9 @@
 package com.model;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 class InputToCoordinates {
     private String originalString;
@@ -11,8 +13,8 @@ class InputToCoordinates {
     }
 
 
-    List<Coordinate> splitAndCreateCoordinates(){
-        List<Coordinate> coordinates = new ArrayList<>();
+    Set<Coordinate> splitAndCreateCoordinates() {
+        Set<Coordinate> coordinates = new HashSet<>();
         String[] splitByNewLine = originalString.split("\\n");
         for (String aSplitByNewLine : splitByNewLine) {
             String[] coordinateArray = aSplitByNewLine.replaceAll("\\s", "").split(",");

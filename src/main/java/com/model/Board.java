@@ -1,133 +1,67 @@
 package com.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Board {
-    private Cell[][] grid;
-    private int row;
-    private int column;
+    private Set<Coordinate> aliveCells;
+    private Set<Coordinate> cellsGettingAffectedInNextGeneration;
 
-    Board(int row, int column, List<Coordinate> coordinates) {
-        this.row = row;
-        this.column = column;
-        this.grid = new Cell[this.row][this.column];
-        for (int i = 0; i < row; i++) {
-            for (int j = 0; j < column; j++) {
-                for (Coordinate coordinate : coordinates) {
-                    if (coordinate.x == i && coordinate.y == j) {
-                        grid[i][j] = new Cell(new Coordinate(i, j), Status.ALIVE);
-                    }
-                }
-                if (grid[i][j] == null) {
-                    grid[i][j] = new Cell(new Coordinate(i, j), Status.DEAD);
 
-                }
-            }
+    Board(Set<Coordinate> aliveCells) {
+        this.aliveCells = aliveCells;
+        cellsGettingAffectedInNextGeneration = new HashSet<>();
+        this.getCellsGettingAffected();
+    }
+
+    private void getCellsGettingAffected() {
+        for (Coordinate coordinate : aliveCells) {
+            cellsGettingAffectedInNextGeneration.addAll(coordinate.getNeighbours());
         }
-
+        for (Coordinate coordinate : aliveCells) {
+            cellsGettingAffectedInNextGeneration.remove(coordinate);
+        }
     }
 
 
-    String getNextGeneration() {
-        Cell[][] nextGenerationGrid = new Cell[this.row][this.column];
-
-        for (int row = 0; row < this.row; row++) {
-            for (int column = 0; column < this.column; column++) {
-                int neighboursCount = neighboursAliveCount(grid[row][column]);
-                if (neighboursCount < 2) {
-                    nextGenerationGrid[row][column] = new Cell(new Coordinate(row, column), Status.DEAD);
-                } else if (neighboursCount > 3) {
-                    nextGenerationGrid[row][column] = new Cell(new Coordinate(row, column), Status.DEAD);
-                } else if (neighboursCount == 3) {
-                    nextGenerationGrid[row][column] = new Cell(new Coordinate(row, column), Status.ALIVE);
-                } else { //==2
-                    nextGenerationGrid[row][column] = new Cell(new Coordinate(row, column), this.grid[row][column].status);
-                }
-
-            }
-        }
-
-        this.grid = nextGenerationGrid;
-        return this.toString();
-    }
-
-
-    int neighboursAliveCount(Cell cell) {
+    private int getNeighbourAliveCount(Coordinate coordinate) {
         int count = 0;
-
-        if (cell.coordinate.x < (this.row - 1)) {
-            if (this.grid[cell.coordinate.x + 1][cell.coordinate.y].status == Status.ALIVE)
-                count++;
-            if (cell.coordinate.y < (this.column - 1)) {
-                if (this.grid[cell.coordinate.x + 1][cell.coordinate.y + 1].status == Status.ALIVE)
-                    count++;
-            }
-            if (cell.coordinate.y > 0) {
-                if (this.grid[cell.coordinate.x + 1][cell.coordinate.y - 1].status == Status.ALIVE)
-                    count++;
-            }
-        }
-
-        if (cell.coordinate.y < (this.column - 1)) {
-            if (this.grid[cell.coordinate.x][cell.coordinate.y + 1].status == Status.ALIVE)
+        Set<Coordinate> neighbours = coordinate.getNeighbours();
+        for (Coordinate neighbour : neighbours) {
+            if (aliveCells.contains(neighbour))
                 count++;
         }
-        if (cell.coordinate.y > 0) {
-            if (this.grid[cell.coordinate.x][cell.coordinate.y - 1].status == Status.ALIVE)
-                count++;
-        }
-
-        if (cell.coordinate.x > 0) {
-            if (this.grid[cell.coordinate.x - 1][cell.coordinate.y].status == Status.ALIVE)
-                count++;
-
-            if (cell.coordinate.y < (this.column - 1)) {
-                if (this.grid[cell.coordinate.x - 1][cell.coordinate.y + 1].status == Status.ALIVE)
-                    count++;
-            }
-            if (cell.coordinate.y > 0) {
-                if (this.grid[cell.coordinate.x - 1][cell.coordinate.y - 1].status == Status.ALIVE)
-                    count++;
-            }
-
-        }
-
-
-//        if(this.grid[cell.coordinate.x+1][cell.coordinate.y].status == Status.ALIVE)
-//            count++;
-//
-//        if(this.grid[cell.coordinate.x+1][cell.coordinate.y+1].status == Status.ALIVE)
-//            count++;
-//        if(this.grid[cell.coordinate.x+1][cell.coordinate.y-1].status == Status.ALIVE)
-//            count++;
-//
-//
-//        if(this.grid[cell.coordinate.x][cell.coordinate.y+1].status == Status.ALIVE)
-//            count++;
-//        if(this.grid[cell.coordinate.x][cell.coordinate.y-1].status == Status.ALIVE)
-//            count++;
-//
-//        if(this.grid[cell.coordinate.x-1][cell.coordinate.y+1].status == Status.ALIVE)
-//            count++;
-//        if(this.grid[cell.coordinate.x-1][cell.coordinate.y].status == Status.ALIVE)
-//            count++;
-//        if(this.grid[cell.coordinate.x-1][cell.coordinate.y-1].status == Status.ALIVE)
-//            count++;
-
         return count;
     }
 
+    String getNextGeneration() {
+        Set<Coordinate> nextGeneration = new HashSet<>();
+        int neighboursCount;
+
+        for (Coordinate coordinate : aliveCells) {
+            neighboursCount = getNeighbourAliveCount(coordinate);
+            if (neighboursCount == 2 || neighboursCount == 3) {
+                nextGeneration.add(coordinate);
+            }
+
+        }
+        for (Coordinate coordinate : cellsGettingAffectedInNextGeneration) {
+            neighboursCount = getNeighbourAliveCount(coordinate);
+            if (neighboursCount == 3) {
+                nextGeneration.add(coordinate);
+            }
+        }
+        aliveCells = nextGeneration;
+        return this.toString();
+    }
 
     @Override
     public String toString() {
-        StringBuilder boardState = new StringBuilder();
-        for (int row = 0; row < this.row; row++) {
-            for (int column = 0; column < this.column; column++) {
-                if (this.grid[row][column].status == Status.ALIVE) {
-                    boardState.append(row).append(", ").append(column).append("\n");
-                }
-            }
+        StringBuilder liveCells = new StringBuilder();
+        for (Coordinate coordinate : aliveCells) {
+            liveCells.append(coordinate);
+
         }
-        return boardState.toString();
+        return liveCells.toString();
     }
 }

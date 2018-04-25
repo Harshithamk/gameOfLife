@@ -9,6 +9,6 @@ public class GameTest {
     public void shouldGetNextGeneration() {
         Game game = new Game("1, 1\n1, 0\n1, 2");
 
-        assertEquals("0, 1\n1, 1\n2, 1\n", game.getNextGeneration());
+        assertEquals("2,1\n1,1\n0,1\n", game.getNextGeneration());
     }
 }

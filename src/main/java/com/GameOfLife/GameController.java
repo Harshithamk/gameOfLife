@@ -1,6 +1,5 @@
-package com.controller;
+package com.GameOfLife;
 
-import com.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +16,7 @@ public class GameController {
     }
 
     @RequestMapping(value = "/game/nextGeneration", method = RequestMethod.POST)
-    public  String getNextGeneration(@RequestBody String initialState){
+    public String getNextGeneration(@RequestBody String initialState) {
         return gameService.getNextGeneration(initialState);
     }
 }

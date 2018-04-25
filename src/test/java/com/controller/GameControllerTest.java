@@ -1,6 +1,7 @@
 package com.controller;
 
-import com.service.GameService;
+import com.GameOfLife.GameController;
+import com.GameOfLife.GameService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -1,4 +1,4 @@
-package com.service;
+package com.GameOfLife;
 
 import com.model.Game;
 import org.springframework.beans.factory.annotation.Autowired;
